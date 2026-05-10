@@ -77,6 +77,7 @@ export function RevealGorgezApp() {
   const reduceMotion = useReducedMotion()
 
   const [pulseOpen, setPulseOpen] = useState(true)
+  const [graveyardOpen, setGraveyardOpen] = useState(true)
   const [tokenInput, setTokenInput] = useState("")
   const [checkResult, setCheckResult] = useState<CheckTokenResult | null>(null)
   const [checkErr, setCheckErr] = useState<string | null>(null)
@@ -341,7 +342,7 @@ export function RevealGorgezApp() {
                   {isCheckPending ? (
                     <>
                       <Search className="size-6 animate-pulse" />
-                      Checking…
+                      Checking���
                     </>
                   ) : (
                     <>
@@ -519,17 +520,41 @@ export function RevealGorgezApp() {
             </Collapsible.Content>
           </Collapsible.Root>
 
-          <Card className="border-[#5DBEB3]/20 bg-[#151515]/85">
-            <CardHeader>
-              <CardTitle className="font-heading text-lg text-[#E8DFD0] sm:text-xl">
-                Unrevealed graveyard
-              </CardTitle>
-              <CardDescription className="text-base">
-                IDs flagged unrevealed by your last full scan. Tap a row to load
-                it above.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <Collapsible.Root
+            open={graveyardOpen}
+            onOpenChange={setGraveyardOpen}
+            className="min-w-0"
+          >
+            <Collapsible.Trigger
+              className={cn(
+                "flex min-h-[52px] w-full items-center justify-between gap-3 rounded-xl border border-[#5DBEB3]/35",
+                "bg-gradient-to-r from-[#1a1a1a]/80 to-[#151515]/90 px-4 py-3 text-left",
+                "font-heading text-lg font-semibold text-[#E8DFD0] shadow-[0_0_20px_rgba(93,190,179,0.12)]",
+                "transition-colors hover:border-[#C75B24]/40 hover:bg-[#1a1a1a]/90 active:scale-[0.99]"
+              )}
+            >
+              <span className="flex items-center gap-2">
+                Unrevealed Graveyard
+                <span className="rounded-full bg-[#5DBEB3]/20 px-2 py-0.5 text-sm font-medium text-[#5DBEB3]">
+                  {unrevealedIds.length}
+                </span>
+              </span>
+              <ChevronDown
+                className={cn(
+                  "size-6 shrink-0 text-[#C75B24] transition-transform duration-200",
+                  graveyardOpen && "rotate-180"
+                )}
+              />
+            </Collapsible.Trigger>
+            <Collapsible.Content className="min-w-0 overflow-hidden">
+              <Card className="mt-3 border-[#5DBEB3]/20 bg-[#151515]/85">
+                <CardHeader>
+                  <CardDescription className="text-base">
+                    IDs flagged unrevealed by your last full scan. Tap a row to load
+                    it above.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button
                   type="button"
@@ -642,8 +667,10 @@ export function RevealGorgezApp() {
                   </div>
                 </>
               )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </Collapsible.Content>
+          </Collapsible.Root>
         </motion.main>
       </div>
 
