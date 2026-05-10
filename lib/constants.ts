@@ -1,6 +1,6 @@
 export const DROP_DED_GORGEZ = {
   address: "0x9c51a3cb5094b26aa1dcb380f3dc7e1a7c681c2d" as const,
-  rpcUrl: "https://eth.llamarpc.com",
+  rpcUrl: "https://rpc.ankr.com/eth",
   totalSupply: 8888,
   name: "DropDedGorgez",
 } as const

@@ -9,6 +9,10 @@ import {
 } from "@/lib/metadata"
 import { erc721TokenUriAbi } from "@/lib/token-uri-abi"
 import { DROP_DED_GORGEZ, SCAN_BATCH_SIZE } from "@/lib/constants"
+import {
+  isLikelyInfrastructureError,
+  toFriendlyErrorMessage,
+} from "@/lib/user-friendly-errors"
 
 export type CheckTokenResult = {
   tokenId: number
@@ -39,17 +43,17 @@ export async function checkTokenAction(tokenId: number): Promise<CheckTokenResul
       tokenURI,
       metadata,
       imageUrl,
-      ...(metaErr ? { error: metaErr } : {}),
+      ...(metaErr ? { error: toFriendlyErrorMessage(metaErr) } : {}),
     }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Chain read failed"
+    const raw = e instanceof Error ? e.message : "Chain read failed"
     return {
       tokenId,
       revealed: false,
       tokenURI: null,
       metadata: null,
       imageUrl: null,
-      error: msg,
+      error: toFriendlyErrorMessage(raw),
     }
   }
 }
@@ -62,6 +66,8 @@ export type ScanBatchResult = {
   unrevealedIds: number[]
   nextStart: number | null
   errors: string[]
+  /** Batch aborted (e.g. RPC); client should retry same startId without applying counts */
+  scanRpcError?: string
 }
 
 export async function scanBatchAction(startId: number): Promise<ScanBatchResult> {
@@ -89,6 +95,21 @@ export async function scanBatchAction(startId: number): Promise<ScanBatchResult>
     })
   )
 
+  const failedReads = uris.filter((r) => r.err)
+  if (failedReads.length === uris.length && uris.length > 0) {
+    const raw = failedReads[0]?.err ?? ""
+    return {
+      startId,
+      endId: startId,
+      revealedInBatch: 0,
+      unrevealedInBatch: 0,
+      unrevealedIds: [],
+      nextStart: null,
+      errors: [],
+      scanRpcError: toFriendlyErrorMessage(raw),
+    }
+  }
+
   const errors: string[] = []
   let revealedInBatch = 0
   let unrevealedInBatch = 0
@@ -96,7 +117,20 @@ export async function scanBatchAction(startId: number): Promise<ScanBatchResult>
 
   for (const row of uris) {
     if (!row.tokenURI || row.err) {
-      errors.push(`#${row.id}: ${row.err ?? "no URI"}`)
+      const friendly = toFriendlyErrorMessage(row.err ?? "no URI")
+      errors.push(`#${row.id}: ${friendly}`)
+      if (isLikelyInfrastructureError(row.err)) {
+        return {
+          startId,
+          endId: startId,
+          revealedInBatch: 0,
+          unrevealedInBatch: 0,
+          unrevealedIds: [],
+          nextStart: null,
+          errors: [],
+          scanRpcError: friendly,
+        }
+      }
       unrevealedInBatch++
       unrevealedIds.push(row.id)
       continue
@@ -104,7 +138,7 @@ export async function scanBatchAction(startId: number): Promise<ScanBatchResult>
 
     const { metadata, error: metaErr } = await loadMetadataFromTokenURI(row.tokenURI)
     if (metaErr) {
-      errors.push(`#${row.id}: ${metaErr}`)
+      errors.push(`#${row.id}: ${toFriendlyErrorMessage(metaErr)}`)
     }
 
     const revealed = isRevealedMetadata(metadata)

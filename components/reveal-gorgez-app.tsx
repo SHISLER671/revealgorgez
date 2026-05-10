@@ -4,6 +4,7 @@ import Image from "next/image"
 import {
   useCallback,
   useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
   useTransition,
@@ -15,6 +16,7 @@ import {
   Copy,
   Download,
   Flame,
+  RefreshCw,
   Search,
   Skull,
   Sparkles,
@@ -100,6 +102,15 @@ export function RevealGorgezApp() {
   const [unrevealedInScan, setUnrevealedInScan] = useState(0)
   const [unrevealedIds, setUnrevealedIds] = useState<number[]>([])
 
+  const [scanRpcError, setScanRpcError] = useState<string | null>(null)
+  const resumeScanCursorRef = useRef<number | null>(null)
+  const scanSnapshotRef = useRef<{
+    revealed: number
+    unrevealed: number
+    accUnrevealed: number[]
+    scannedThrough: number
+  } | null>(null)
+
   const onCheck = () => {
     setCheckErr(null)
     const id = pickTokenId(tokenInput)
@@ -111,30 +122,67 @@ export function RevealGorgezApp() {
     startCheckTransition(async () => {
       const res = await checkTokenAction(id)
       setCheckResult(res)
-      if (res.error && !res.tokenURI) {
-        setCheckErr(res.error)
-      } else {
-        setCheckErr(null)
-      }
+      setCheckErr(null)
     })
   }
 
-  const runFullScan = useCallback(async () => {
+  const runFullScan = useCallback(async (resume = false) => {
+    setScanRpcError(null)
     setScanning(true)
-    setScanProgressPct(0)
-    setScannedThrough(0)
-    setRevealedInScan(0)
-    setUnrevealedInScan(0)
-    setUnrevealedIds([])
 
-    let cursor: number | null = 1
-    let revealed = 0
-    let unrevealed = 0
-    const accUnrevealed: number[] = []
+    let cursor: number | null
+    let revealed: number
+    let unrevealed: number
+    let accUnrevealed: number[]
+
+    if (resume && resumeScanCursorRef.current !== null) {
+      cursor = resumeScanCursorRef.current
+      const snap = scanSnapshotRef.current
+      if (snap) {
+        revealed = snap.revealed
+        unrevealed = snap.unrevealed
+        accUnrevealed = [...snap.accUnrevealed]
+        const sortedUnique = [...new Set(accUnrevealed)].sort((a, b) => a - b)
+        setRevealedInScan(revealed)
+        setUnrevealedInScan(unrevealed)
+        setUnrevealedIds(sortedUnique)
+        setScannedThrough(snap.scannedThrough)
+        setScanProgressPct(
+          (snap.scannedThrough / DROP_DED_GORGEZ.totalSupply) * 100
+        )
+      } else {
+        revealed = 0
+        unrevealed = 0
+        accUnrevealed = []
+        setRevealedInScan(0)
+        setUnrevealedInScan(0)
+        setUnrevealedIds([])
+        setScannedThrough(0)
+        setScanProgressPct(0)
+      }
+    } else {
+      resumeScanCursorRef.current = null
+      scanSnapshotRef.current = null
+      setScanProgressPct(0)
+      setScannedThrough(0)
+      setRevealedInScan(0)
+      setUnrevealedInScan(0)
+      setUnrevealedIds([])
+      cursor = 1
+      revealed = 0
+      unrevealed = 0
+      accUnrevealed = []
+    }
 
     try {
       while (cursor !== null) {
         const batch = await scanBatchAction(cursor)
+        if (batch.scanRpcError) {
+          resumeScanCursorRef.current = cursor
+          setScanRpcError(batch.scanRpcError)
+          return
+        }
+
         revealed += batch.revealedInBatch
         unrevealed += batch.unrevealedInBatch
         accUnrevealed.push(...batch.unrevealedIds)
@@ -146,10 +194,20 @@ export function RevealGorgezApp() {
         setScannedThrough(batch.endId)
         setScanProgressPct((batch.endId / DROP_DED_GORGEZ.totalSupply) * 100)
 
+        scanSnapshotRef.current = {
+          revealed,
+          unrevealed,
+          accUnrevealed: [...sortedUnique],
+          scannedThrough: batch.endId,
+        }
+
         if (batch.nextStart === null) break
         cursor = batch.nextStart
         await new Promise((r) => setTimeout(r, SCAN_BATCH_DELAY_MS))
       }
+      resumeScanCursorRef.current = null
+      scanSnapshotRef.current = null
+      setScanRpcError(null)
     } finally {
       setScanning(false)
     }
@@ -333,6 +391,8 @@ export function RevealGorgezApp() {
                   onCopyUri={() =>
                     checkResult.tokenURI && copyText(checkResult.tokenURI)
                   }
+                  onRetry={checkResult.error ? onCheck : undefined}
+                  checkRetryPending={isCheckPending}
                 />
               </motion.div>
             ) : null}
@@ -549,9 +609,33 @@ export function RevealGorgezApp() {
                       <FlameProgress value={scanProgressPct} className="h-4 sm:h-3" />
                     </div>
 
+                    {scanRpcError && !scanning ? (
+                      <div
+                        className="flex flex-col gap-3 rounded-xl border border-[#ff6600]/35 bg-[#0a0a0a]/70 p-4"
+                        role="alert"
+                      >
+                        <p className="text-center text-base leading-relaxed text-[#f4e9ff]">
+                          {scanRpcError}
+                        </p>
+                        <Button
+                          type="button"
+                          onClick={() => runFullScan(true)}
+                          className={cn(
+                            "min-h-[52px] w-full rounded-xl border border-[#00f0ff]/45 text-base font-semibold",
+                            "bg-[#1a0033]/80 text-[#00f0ff] shadow-[0_0_20px_rgba(0,240,255,0.2)]",
+                            "hover:bg-[#00f0ff]/10 active:scale-[0.98]",
+                            "sm:min-h-14"
+                          )}
+                        >
+                          <RefreshCw className="size-5" />
+                          Try again
+                        </Button>
+                      </div>
+                    ) : null}
+
                     <Button
                       type="button"
-                      onClick={runFullScan}
+                      onClick={() => runFullScan(false)}
                       disabled={scanning}
                       className={cn(
                         "relative min-h-[52px] w-full rounded-xl border border-[#ff6600]/50 text-base font-bold",
@@ -592,11 +676,16 @@ export function RevealGorgezApp() {
 function ResultCard({
   result,
   onCopyUri,
+  onRetry,
+  checkRetryPending = false,
 }: {
   result: CheckTokenResult
   onCopyUri: () => void
+  onRetry?: () => void
+  checkRetryPending?: boolean
 }) {
-  const revealed = result.revealed
+  const rpcCheckFailed = Boolean(result.error && !result.tokenURI)
+  const revealed = result.revealed && !rpcCheckFailed
 
   return (
     <Card className="overflow-hidden border-[#00f0ff]/30 bg-[#12051f]/95 shadow-[0_0_48px_rgba(0,240,255,0.1)]">
@@ -611,19 +700,46 @@ function ResultCard({
           <div
             className={cn(
               "flex items-center gap-3 text-2xl font-bold sm:text-3xl",
-              revealed ? "text-[#39ff14]" : "text-[#ff3355]"
+              rpcCheckFailed
+                ? "text-[#ff6600]"
+                : revealed
+                  ? "text-[#39ff14]"
+                  : "text-[#ff3355]"
             )}
           >
             <Skull className="size-8 shrink-0 sm:size-10" strokeWidth={1.5} />
-            {revealed ? "Revealed" : "Unrevealed"}
+            {rpcCheckFailed
+              ? "Couldn't check"
+              : revealed
+                ? "Revealed"
+                : "Unrevealed"}
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 pt-6">
         {result.error ? (
-          <p className="rounded-lg border border-[#ff3355]/30 bg-[#ff3355]/10 p-3 text-sm text-[#ff9aa8]">
-            {result.error}
-          </p>
+          <div className="space-y-3">
+            <p className="rounded-lg border border-[#ff6600]/35 bg-[#ff6600]/10 p-3 text-base leading-relaxed text-[#f4e9ff]">
+              {result.error}
+            </p>
+            {onRetry ? (
+              <Button
+                type="button"
+                onClick={onRetry}
+                disabled={checkRetryPending}
+                className={cn(
+                  "min-h-[52px] w-full rounded-xl border border-[#00f0ff]/45 font-semibold text-[#00f0ff]",
+                  "bg-[#1a0033]/60 hover:bg-[#00f0ff]/10 active:scale-[0.98] disabled:opacity-50",
+                  "sm:min-h-12"
+                )}
+              >
+                <RefreshCw
+                  className={cn("size-5", checkRetryPending && "animate-spin")}
+                />
+                Try again
+              </Button>
+            ) : null}
+          </div>
         ) : null}
 
         {result.tokenURI ? (

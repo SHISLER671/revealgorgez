@@ -1,4 +1,8 @@
 import { DROP_DED_GORGEZ } from "@/lib/constants"
+import {
+  RPC_BUSY_USER_MESSAGE,
+  toFriendlyErrorMessage,
+} from "@/lib/user-friendly-errors"
 
 export function resolveFetchableUri(uri: string): string {
   const t = uri.trim()
@@ -55,14 +59,26 @@ export async function loadMetadataFromTokenURI(
     if (!res.ok) {
       return {
         metadata: null,
-        error: `Metadata HTTP ${res.status}`,
+        error: toFriendlyErrorMessage(`Metadata HTTP ${res.status}`),
       }
     }
-    const metadata = (await res.json()) as Record<string, unknown>
-    return { metadata }
+    const text = await res.text()
+    const trimmed = text.trimStart()
+    if (trimmed.startsWith("<") || trimmed.toLowerCase().includes("<!doctype")) {
+      return { metadata: null, error: RPC_BUSY_USER_MESSAGE }
+    }
+    try {
+      const metadata = JSON.parse(text) as Record<string, unknown>
+      return { metadata }
+    } catch {
+      return {
+        metadata: null,
+        error: RPC_BUSY_USER_MESSAGE,
+      }
+    }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Metadata fetch failed"
-    return { metadata: null, error: msg }
+    return { metadata: null, error: toFriendlyErrorMessage(msg) }
   }
 }
 
