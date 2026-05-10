@@ -550,8 +550,7 @@ export function RevealGorgezApp() {
               <Card className="mt-3 border-[#5DBEB3]/20 bg-[#151515]/85">
                 <CardHeader>
                   <CardDescription className="text-base">
-                    IDs flagged unrevealed by your last full scan. Tap a row to load
-                    it above.
+                    IDs flagged unrevealed by your latest CollectionPulse
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
