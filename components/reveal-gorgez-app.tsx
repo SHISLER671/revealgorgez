@@ -238,6 +238,52 @@ export function RevealGorgezApp() {
         className="pointer-events-none fixed inset-0 skull-watermark"
         aria-hidden
       />
+
+      <header className="relative z-10 overflow-hidden border-b border-[#E8DFD0]/10 bg-[#0a0a0a]">
+        <div className="absolute inset-0">
+          <Image
+            src="/brand/drop-ded-banner.png"
+            alt=""
+            fill
+            className="object-cover object-center opacity-20"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/60 to-[#0a0a0a]" />
+        </div>
+        <motion.div
+          {...(reduceMotion
+            ? { initial: false }
+            : { initial: { opacity: 0, y: 12 } })}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 mx-auto max-w-4xl px-4 py-8 text-center sm:px-6 sm:py-10 lg:px-10"
+        >
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#C75B24]/30 bg-[#1a1a1a]/60 px-3 py-1 text-xs font-medium tracking-wide text-[#E8DFD0] backdrop-blur-sm sm:text-sm">
+            <Sparkles className="size-4 shrink-0 text-[#C75B24]" aria-hidden />
+            DropDedGorgez · 8888 on Ethereum
+          </div>
+          <h1
+            className={cn(
+              "font-heading text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl",
+              "bg-gradient-to-r from-[#C75B24] via-[#E84393] to-[#5DBEB3] bg-clip-text text-transparent",
+              "logo-glow"
+            )}
+          >
+            RevealGorgez
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#a89a8a] sm:text-lg">
+            Know before you snipe{" "}
+            <span className="text-[#C75B24]">·</span> No wallet. No lies.
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl font-mono text-xs text-muted-foreground sm:text-sm">
+            Contract{" "}
+            <span className="break-all text-[#5DBEB3]/80">
+              {DROP_DED_GORGEZ.address}
+            </span>
+          </p>
+        </motion.div>
+      </header>
+
       <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-[1fr,minmax(280px,380px)] lg:gap-8 lg:px-8">
         {/* Main column — left on desktop */}
         <motion.main
