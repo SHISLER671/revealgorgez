@@ -674,7 +674,22 @@ export function RevealGorgezApp() {
       </div>
 
       <footer className="relative z-10 mt-auto border-t border-[#1a1a1a] px-4 py-6 text-center text-xs text-muted-foreground sm:text-sm">
-        <div className="mb-3">
+        <div className="mb-3 flex items-center justify-center gap-4">
+          <a
+            href="https://dedgorgez.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block transition-opacity hover:opacity-80"
+            aria-label="Visit official DedGorgez website"
+          >
+            <Image
+              src="/brand/skull-mark.png"
+              alt="DedGorgez"
+              width={36}
+              height={36}
+              className="brightness-100 sepia saturate-200 hue-rotate-[15deg]"
+            />
+          </a>
           <a
             href="https://opensea.io/collection/gorgez"
             target="_blank"
