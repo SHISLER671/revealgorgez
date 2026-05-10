@@ -1,12 +1,20 @@
-import { createPublicClient, http } from "viem"
+import { createPublicClient, fallback, http } from "viem"
 import { mainnet } from "viem/chains"
 
-import { DROP_DED_GORGEZ } from "@/lib/constants"
+import { ETH_RPC_URLS } from "@/lib/constants"
+
+const rpcTransports = ETH_RPC_URLS.map((url) =>
+  http(url, {
+    batch: { wait: 50 },
+    timeout: 25_000,
+  })
+)
 
 export const gorgezPublicClient = createPublicClient({
   chain: mainnet,
-  transport: http(DROP_DED_GORGEZ.rpcUrl, {
-    batch: { wait: 50 },
-    retryCount: 2,
+  transport: fallback(rpcTransports, {
+    /** Re-run the fallback chain once if every endpoint failed */
+    retryCount: 1,
+    retryDelay: 150,
   }),
 })
