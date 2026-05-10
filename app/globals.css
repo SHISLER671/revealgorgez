@@ -49,6 +49,9 @@
   --color-bone: #E8DFD0;
   --color-brick: #C75B24;
   --color-teal: #5DBEB3;
+  --color-wizard: #3B5998;
+  --color-brain: #E84393;
+  --color-gold: #F1C40F;
   --color-void: #0a0a0a;
   --color-charcoal: #1a1a1a;
 }
@@ -74,9 +77,9 @@
   --ring: #C75B24;
   --chart-1: #C75B24;
   --chart-2: #5DBEB3;
-  --chart-3: #8B5CF6;
-  --chart-4: #E8DFD0;
-  --chart-5: #1a1a1a;
+  --chart-3: #E84393;
+  --chart-4: #3B5998;
+  --chart-5: #F1C40F;
   --radius: 0.75rem;
   --sidebar: #151515;
   --sidebar-foreground: #E8DFD0;
@@ -109,9 +112,9 @@
   --ring: #C75B24;
   --chart-1: #C75B24;
   --chart-2: #5DBEB3;
-  --chart-3: #8B5CF6;
-  --chart-4: #E8DFD0;
-  --chart-5: #1a1a1a;
+  --chart-3: #E84393;
+  --chart-4: #3B5998;
+  --chart-5: #F1C40F;
   --sidebar: #151515;
   --sidebar-foreground: #E8DFD0;
   --sidebar-primary: #C75B24;
@@ -151,10 +154,11 @@
   background: linear-gradient(
     90deg,
     #C75B24,
-    #E8DFD0,
+    #E84393,
     #5DBEB3,
-    #C75B24,
-    #E8DFD0
+    #3B5998,
+    #F1C40F,
+    #C75B24
   );
   background-size: 200% 100%;
   animation: flame-shift 2.2s linear infinite;
@@ -215,6 +219,6 @@
 .logo-glow {
   text-shadow:
     0 0 20px rgba(199, 91, 36, 0.65),
-    0 0 48px rgba(232, 223, 208, 0.25),
+    0 0 48px rgba(232, 67, 147, 0.3),
     0 0 2px rgba(93, 190, 179, 0.4);
 }

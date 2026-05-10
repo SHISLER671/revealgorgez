@@ -262,7 +262,7 @@ export function RevealGorgezApp() {
           <h1
             className={cn(
               "font-heading text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl",
-              "bg-gradient-to-r from-[#C75B24] via-[#E8DFD0] to-[#5DBEB3] bg-clip-text text-transparent",
+              "bg-gradient-to-r from-[#C75B24] via-[#E84393] to-[#5DBEB3] bg-clip-text text-transparent",
               "logo-glow"
             )}
           >
@@ -340,7 +340,7 @@ export function RevealGorgezApp() {
                 disabled={isCheckPending}
                 className={cn(
                   "group relative min-h-[52px] w-full overflow-hidden rounded-xl text-lg font-bold tracking-wide",
-                  "bg-gradient-to-r from-[#C75B24] via-[#E8DFD0] to-[#5DBEB3] text-[#0a0a0a]",
+                  "bg-gradient-to-r from-[#C75B24] via-[#E84393] to-[#5DBEB3] text-[#0a0a0a]",
                   "shadow-[0_0_32px_rgba(199,91,36,0.35)] transition-all duration-200",
                   "hover:brightness-110 hover:shadow-[0_0_48px_rgba(199,91,36,0.45)]",
                   "active:scale-[0.98] disabled:opacity-60",
