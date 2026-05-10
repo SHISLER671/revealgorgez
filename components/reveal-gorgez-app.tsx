@@ -6,7 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
-  useSyncExternalStore,
+
   useTransition,
 } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
@@ -73,22 +73,9 @@ async function copyText(text: string) {
   }
 }
 
-function useIsLargeScreen() {
-  return useSyncExternalStore(
-    (onStoreChange) => {
-      if (typeof window === "undefined") return () => {}
-      const mq = window.matchMedia("(min-width: 1024px)")
-      mq.addEventListener("change", onStoreChange)
-      return () => mq.removeEventListener("change", onStoreChange)
-    },
-    () => window.matchMedia("(min-width: 1024px)").matches,
-    () => false
-  )
-}
-
 export function RevealGorgezApp() {
   const reduceMotion = useReducedMotion()
-  const isLg = useIsLargeScreen()
+
   const [pulseOpen, setPulseOpen] = useState(true)
   const [tokenInput, setTokenInput] = useState("")
   const [checkResult, setCheckResult] = useState<CheckTokenResult | null>(null)
@@ -284,13 +271,12 @@ export function RevealGorgezApp() {
         </motion.div>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-8 lg:grid-cols-[1fr,minmax(280px,380px)] lg:gap-8 lg:px-8">
-        {/* Main column — left on desktop */}
+      <div className="relative z-10 mx-auto w-full max-w-3xl flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <motion.main
           initial={reduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="order-2 flex min-w-0 flex-col gap-6 lg:order-1 lg:gap-8"
+          className="flex min-w-0 flex-col gap-6 lg:gap-8"
         >
           <Card className="relative border-[#C75B24]/25 bg-[#151515]/90 shadow-[0_0_40px_rgba(199,91,36,0.08)] ring-1 ring-[#C75B24]/10">
             <div
@@ -408,6 +394,130 @@ export function RevealGorgezApp() {
               </motion.div>
             ) : null}
           </AnimatePresence>
+
+          {/* Collection Pulse */}
+          <Collapsible.Root
+            open={pulseOpen}
+            onOpenChange={setPulseOpen}
+            className="min-w-0"
+          >
+            <Collapsible.Trigger
+              className={cn(
+                "flex min-h-[52px] w-full items-center justify-between gap-3 rounded-xl border border-[#C75B24]/35",
+                "bg-gradient-to-r from-[#1a1a1a]/80 to-[#151515]/90 px-4 py-3 text-left",
+                "font-heading text-lg font-semibold text-[#E8DFD0] shadow-[0_0_20px_rgba(199,91,36,0.12)]",
+                "transition-colors hover:border-[#5DBEB3]/40 hover:bg-[#1a1a1a]/90 active:scale-[0.99]"
+              )}
+            >
+              Collection Pulse
+              <ChevronDown
+                className={cn(
+                  "size-6 shrink-0 text-[#5DBEB3] transition-transform duration-200",
+                  pulseOpen && "rotate-180"
+                )}
+              />
+            </Collapsible.Trigger>
+            <Collapsible.Content className="min-w-0 overflow-hidden">
+              <motion.div
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.45 }}
+              >
+                <Card className="mt-3 border-[#C75B24]/25 bg-gradient-to-b from-[#1a1a1a]/55 to-[#151515]/95 shadow-[0_0_36px_rgba(199,91,36,0.12)]">
+                  <div
+                    className="pointer-events-none absolute bottom-0 right-0 opacity-[0.06]"
+                    aria-hidden
+                  >
+                    <Flame className="size-32 text-[#C75B24]" />
+                  </div>
+                  <CardHeader className="relative z-[1]">
+                    <CardDescription className="text-base text-[#a89a8a]">
+                      {scanSummary}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="relative z-[1] space-y-5">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                      <div className="rounded-xl border border-[#5DBEB3]/20 bg-[#0a0a0a]/60 p-4 text-center">
+                        <p className="text-xs font-medium uppercase tracking-wider text-[#5DBEB3]/80">
+                          Revealed
+                        </p>
+                        <p className="mt-1 font-heading text-3xl font-bold text-[#5DBEB3] sm:text-4xl">
+                          {scannedThrough > 0 || scanning ? revealedInScan : "—"}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-[#C75B24]/25 bg-[#0a0a0a]/60 p-4 text-center">
+                        <p className="text-xs font-medium uppercase tracking-wider text-[#C75B24]/80">
+                          Unrevealed
+                        </p>
+                        <p className="mt-1 font-heading text-3xl font-bold text-[#C75B24] sm:text-4xl">
+                          {scannedThrough > 0 || scanning
+                            ? unrevealedInScan
+                            : "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span>Graveyard progress</span>
+                        <span className="font-mono text-[#E8DFD0]">
+                          {scannedThrough} / {DROP_DED_GORGEZ.totalSupply}
+                        </span>
+                      </div>
+                      <FlameProgress value={scanProgressPct} className="h-4 sm:h-3" />
+                    </div>
+
+                    {scanRpcError && !scanning ? (
+                      <div
+                        className="flex flex-col gap-3 rounded-xl border border-[#C75B24]/35 bg-[#0a0a0a]/70 p-4"
+                        role="alert"
+                      >
+                        <p className="text-center text-base leading-relaxed text-[#E8DFD0]">
+                          {scanRpcError}
+                        </p>
+                        <Button
+                          type="button"
+                          onClick={() => runFullScan(true)}
+                          className={cn(
+                            "min-h-[52px] w-full rounded-xl border border-[#5DBEB3]/45 text-base font-semibold",
+                            "bg-[#1a1a1a]/80 text-[#5DBEB3] shadow-[0_0_20px_rgba(93,190,179,0.2)]",
+                            "hover:bg-[#5DBEB3]/10 active:scale-[0.98]",
+                            "sm:min-h-14"
+                          )}
+                        >
+                          <RefreshCw className="size-5" />
+                          Try again
+                        </Button>
+                      </div>
+                    ) : null}
+
+                    <Button
+                      type="button"
+                      onClick={() => runFullScan(false)}
+                      disabled={scanning}
+                      className={cn(
+                        "relative min-h-[52px] w-full rounded-xl border border-[#C75B24]/50 text-base font-bold",
+                        "bg-[#0a0a0a]/80 text-[#C75B24] shadow-[0_0_24px_rgba(199,91,36,0.25)]",
+                        "transition-all hover:bg-[#C75B24]/15 hover:shadow-[0_0_36px_rgba(199,91,36,0.4)]",
+                        "active:scale-[0.98] disabled:opacity-50",
+                        "sm:min-h-14 sm:text-lg"
+                      )}
+                    >
+                      <Flame
+                        className={cn(
+                          "size-6",
+                          scanning && "animate-pulse text-[#5DBEB3]"
+                        )}
+                      />
+                      {scanning
+                        ? "Scanning graveyard..."
+                        : "Scan the Whole Graveyard"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Collapsible.Content>
+          </Collapsible.Root>
 
           <Card className="border-[#5DBEB3]/20 bg-[#151515]/85">
             <CardHeader>
@@ -535,143 +645,6 @@ export function RevealGorgezApp() {
             </CardContent>
           </Card>
         </motion.main>
-
-        {/* Collection pulse — top on mobile, sidebar on desktop */}
-        <aside className="order-1 min-w-0 lg:order-2">
-          <Collapsible.Root
-            open={isLg || pulseOpen}
-            onOpenChange={(open) => {
-              if (!isLg) setPulseOpen(open)
-            }}
-            className="min-w-0"
-          >
-            <Collapsible.Trigger
-              className={cn(
-                "mb-3 flex min-h-[52px] w-full items-center justify-between gap-3 rounded-xl border border-[#C75B24]/35",
-                "bg-gradient-to-r from-[#1a1a1a]/80 to-[#151515]/90 px-4 py-3 text-left",
-                "font-heading text-lg font-semibold text-[#E8DFD0] shadow-[0_0_20px_rgba(199,91,36,0.12)]",
-                "transition-colors hover:border-[#5DBEB3]/40 hover:bg-[#1a1a1a]/90 active:scale-[0.99]",
-                "lg:hidden"
-              )}
-            >
-              Collection Pulse
-              <ChevronDown
-                className={cn(
-                  "size-6 shrink-0 text-[#5DBEB3] transition-transform duration-200",
-                  pulseOpen && "rotate-180"
-                )}
-              />
-            </Collapsible.Trigger>
-            <Collapsible.Content className="min-w-0 overflow-hidden">
-              <motion.div
-                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.45 }}
-              >
-                <Card className="sticky top-4 border-[#C75B24]/25 bg-gradient-to-b from-[#1a1a1a]/55 to-[#151515]/95 shadow-[0_0_36px_rgba(199,91,36,0.12)] lg:top-6">
-                  <div
-                    className="pointer-events-none absolute bottom-0 right-0 opacity-[0.06]"
-                    aria-hidden
-                  >
-                    <Flame className="size-32 text-[#C75B24]" />
-                  </div>
-                  <CardHeader className="relative z-[1] hidden lg:block">
-                    <CardTitle className="font-heading text-xl text-[#E8DFD0] sm:text-2xl">
-                      Collection Pulse
-                    </CardTitle>
-                    <CardDescription className="text-base text-[#a89a8a]">
-                      {scanSummary}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardHeader className="relative z-[1] lg:hidden">
-                    <CardDescription className="text-base text-[#a89a8a]">
-                      {scanSummary}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="relative z-[1] space-y-5">
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                      <div className="rounded-xl border border-[#5DBEB3]/20 bg-[#0a0a0a]/60 p-4 text-center">
-                        <p className="text-xs font-medium uppercase tracking-wider text-[#5DBEB3]/80">
-                          Revealed
-                        </p>
-                        <p className="mt-1 font-heading text-3xl font-bold text-[#5DBEB3] sm:text-4xl">
-                          {scannedThrough > 0 || scanning ? revealedInScan : "—"}
-                        </p>
-                      </div>
-                      <div className="rounded-xl border border-[#C75B24]/25 bg-[#0a0a0a]/60 p-4 text-center">
-                        <p className="text-xs font-medium uppercase tracking-wider text-[#C75B24]/80">
-                          Unrevealed
-                        </p>
-                        <p className="mt-1 font-heading text-3xl font-bold text-[#C75B24] sm:text-4xl">
-                          {scannedThrough > 0 || scanning
-                            ? unrevealedInScan
-                            : "—"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>Graveyard progress</span>
-                        <span className="font-mono text-[#E8DFD0]">
-                          {scannedThrough} / {DROP_DED_GORGEZ.totalSupply}
-                        </span>
-                      </div>
-                      <FlameProgress value={scanProgressPct} className="h-4 sm:h-3" />
-                    </div>
-
-                    {scanRpcError && !scanning ? (
-                      <div
-                        className="flex flex-col gap-3 rounded-xl border border-[#C75B24]/35 bg-[#0a0a0a]/70 p-4"
-                        role="alert"
-                      >
-                        <p className="text-center text-base leading-relaxed text-[#E8DFD0]">
-                          {scanRpcError}
-                        </p>
-                        <Button
-                          type="button"
-                          onClick={() => runFullScan(true)}
-                          className={cn(
-                            "min-h-[52px] w-full rounded-xl border border-[#5DBEB3]/45 text-base font-semibold",
-                            "bg-[#1a1a1a]/80 text-[#5DBEB3] shadow-[0_0_20px_rgba(93,190,179,0.2)]",
-                            "hover:bg-[#5DBEB3]/10 active:scale-[0.98]",
-                            "sm:min-h-14"
-                          )}
-                        >
-                          <RefreshCw className="size-5" />
-                          Try again
-                        </Button>
-                      </div>
-                    ) : null}
-
-                    <Button
-                      type="button"
-                      onClick={() => runFullScan(false)}
-                      disabled={scanning}
-                      className={cn(
-                        "relative min-h-[52px] w-full rounded-xl border border-[#C75B24]/50 text-base font-bold",
-                        "bg-[#0a0a0a]/80 text-[#C75B24] shadow-[0_0_24px_rgba(199,91,36,0.25)]",
-                        "transition-all hover:bg-[#C75B24]/15 hover:shadow-[0_0_36px_rgba(199,91,36,0.4)]",
-                        "active:scale-[0.98] disabled:opacity-50",
-                        "sm:min-h-14 sm:text-lg"
-                      )}
-                    >
-                      <Flame
-                        className={cn(
-                          "size-6",
-                          scanning && "animate-pulse text-[#5DBEB3]"
-                        )}
-                      />
-                      {scanning
-                        ? "Scanning graveyard…"
-                        : "Scan the Whole Graveyard"}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Collapsible.Content>
-          </Collapsible.Root>
-        </aside>
       </div>
 
       <footer className="relative z-10 mt-auto border-t border-[#1a1a1a] px-4 py-6 text-center text-xs text-muted-foreground sm:text-sm">
