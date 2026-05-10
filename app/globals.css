@@ -46,80 +46,80 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --color-neon-cyan: #00f0ff;
-  --color-neon-pink: #ff00aa;
-  --color-neon-orange: #ff6600;
+  --color-bone: #E8DFD0;
+  --color-brick: #C75B24;
+  --color-teal: #5DBEB3;
   --color-void: #0a0a0a;
-  --color-vault: #1a0033;
+  --color-charcoal: #1a1a1a;
 }
 
 :root {
   --background: #0a0a0a;
-  --foreground: #f4e9ff;
-  --card: #12051f;
-  --card-foreground: #f4e9ff;
-  --popover: #12051f;
-  --popover-foreground: #f4e9ff;
-  --primary: #00f0ff;
+  --foreground: #E8DFD0;
+  --card: #151515;
+  --card-foreground: #E8DFD0;
+  --popover: #151515;
+  --popover-foreground: #E8DFD0;
+  --primary: #C75B24;
   --primary-foreground: #0a0a0a;
-  --secondary: #1a0033;
-  --secondary-foreground: #f4e9ff;
-  --muted: #1a0033;
-  --muted-foreground: #c4a8d8;
-  --accent: #ff00aa;
-  --accent-foreground: #ffffff;
-  --destructive: #ff3355;
-  --border: rgba(0, 240, 255, 0.18);
-  --input: rgba(255, 0, 170, 0.12);
-  --ring: #00f0ff;
-  --chart-1: #00f0ff;
-  --chart-2: #ff00aa;
-  --chart-3: #ff6600;
-  --chart-4: #c4a8d8;
-  --chart-5: #1a0033;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #E8DFD0;
+  --muted: #1a1a1a;
+  --muted-foreground: #a89a8a;
+  --accent: #5DBEB3;
+  --accent-foreground: #0a0a0a;
+  --destructive: #e54d4d;
+  --border: rgba(232, 223, 208, 0.15);
+  --input: rgba(199, 91, 36, 0.12);
+  --ring: #C75B24;
+  --chart-1: #C75B24;
+  --chart-2: #5DBEB3;
+  --chart-3: #8B5CF6;
+  --chart-4: #E8DFD0;
+  --chart-5: #1a1a1a;
   --radius: 0.75rem;
-  --sidebar: #12051f;
-  --sidebar-foreground: #f4e9ff;
-  --sidebar-primary: #00f0ff;
+  --sidebar: #151515;
+  --sidebar-foreground: #E8DFD0;
+  --sidebar-primary: #C75B24;
   --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #1a0033;
-  --sidebar-accent-foreground: #f4e9ff;
-  --sidebar-border: rgba(0, 240, 255, 0.15);
-  --sidebar-ring: #ff00aa;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #E8DFD0;
+  --sidebar-border: rgba(232, 223, 208, 0.12);
+  --sidebar-ring: #5DBEB3;
 }
 
 .dark {
   --background: #0a0a0a;
-  --foreground: #f4e9ff;
-  --card: #12051f;
-  --card-foreground: #f4e9ff;
-  --popover: #12051f;
-  --popover-foreground: #f4e9ff;
-  --primary: #00f0ff;
+  --foreground: #E8DFD0;
+  --card: #151515;
+  --card-foreground: #E8DFD0;
+  --popover: #151515;
+  --popover-foreground: #E8DFD0;
+  --primary: #C75B24;
   --primary-foreground: #0a0a0a;
-  --secondary: #1a0033;
-  --secondary-foreground: #f4e9ff;
-  --muted: #1a0033;
-  --muted-foreground: #c4a8d8;
-  --accent: #ff00aa;
-  --accent-foreground: #ffffff;
-  --destructive: #ff3355;
-  --border: rgba(0, 240, 255, 0.18);
-  --input: rgba(255, 0, 170, 0.12);
-  --ring: #00f0ff;
-  --chart-1: #00f0ff;
-  --chart-2: #ff00aa;
-  --chart-3: #ff6600;
-  --chart-4: #c4a8d8;
-  --chart-5: #1a0033;
-  --sidebar: #12051f;
-  --sidebar-foreground: #f4e9ff;
-  --sidebar-primary: #00f0ff;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #E8DFD0;
+  --muted: #1a1a1a;
+  --muted-foreground: #a89a8a;
+  --accent: #5DBEB3;
+  --accent-foreground: #0a0a0a;
+  --destructive: #e54d4d;
+  --border: rgba(232, 223, 208, 0.15);
+  --input: rgba(199, 91, 36, 0.12);
+  --ring: #C75B24;
+  --chart-1: #C75B24;
+  --chart-2: #5DBEB3;
+  --chart-3: #8B5CF6;
+  --chart-4: #E8DFD0;
+  --chart-5: #1a1a1a;
+  --sidebar: #151515;
+  --sidebar-foreground: #E8DFD0;
+  --sidebar-primary: #C75B24;
   --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #1a0033;
-  --sidebar-accent-foreground: #f4e9ff;
-  --sidebar-border: rgba(0, 240, 255, 0.15);
-  --sidebar-ring: #ff00aa;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #E8DFD0;
+  --sidebar-border: rgba(232, 223, 208, 0.12);
+  --sidebar-ring: #5DBEB3;
 }
 
 @keyframes flame-shift {
@@ -135,14 +135,14 @@
   0%,
   100% {
     box-shadow:
-      0 0 12px rgba(0, 240, 255, 0.35),
-      0 0 28px rgba(255, 0, 170, 0.2);
+      0 0 12px rgba(199, 91, 36, 0.35),
+      0 0 28px rgba(93, 190, 179, 0.2);
     opacity: 1;
   }
   50% {
     box-shadow:
-      0 0 20px rgba(255, 0, 170, 0.45),
-      0 0 40px rgba(0, 240, 255, 0.35);
+      0 0 20px rgba(93, 190, 179, 0.45),
+      0 0 40px rgba(199, 91, 36, 0.35);
     opacity: 0.92;
   }
 }
@@ -150,11 +150,11 @@
 .flame-progress-fill {
   background: linear-gradient(
     90deg,
-    #ff6600,
-    #ff00aa,
-    #00f0ff,
-    #ff6600,
-    #ff00aa
+    #C75B24,
+    #E8DFD0,
+    #5DBEB3,
+    #C75B24,
+    #E8DFD0
   );
   background-size: 200% 100%;
   animation: flame-shift 2.2s linear infinite;
@@ -183,7 +183,7 @@
 
   .neon-skeleton-glow {
     animation: none !important;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+    box-shadow: 0 0 12px rgba(199, 91, 36, 0.25);
   }
 }
 
@@ -194,9 +194,9 @@
   body {
     @apply bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(26, 0, 51, 0.9), transparent),
-      radial-gradient(ellipse 80% 50% at 100% 50%, rgba(255, 0, 170, 0.06), transparent),
-      radial-gradient(ellipse 60% 40% at 0% 80%, rgba(0, 240, 255, 0.05), transparent);
+      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(26, 26, 26, 0.9), transparent),
+      radial-gradient(ellipse 80% 50% at 100% 50%, rgba(199, 91, 36, 0.04), transparent),
+      radial-gradient(ellipse 60% 40% at 0% 80%, rgba(93, 190, 179, 0.03), transparent);
     background-color: #0a0a0a;
   }
   html {
@@ -206,14 +206,15 @@
 }
 
 .skull-watermark {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 24 24' fill='none' stroke='%23ff00aa' stroke-width='0.35' stroke-opacity='0.07'%3E%3Cpath d='M12 3c-2.5 0-4.5 2-4.5 4.5v1.5c0 1.5-.5 3-1.5 4.5L5 16v2c0 1.5 1 2.5 2.5 2.5h9c1.5 0 2.5-1 2.5-2.5v-2l-1-2.5c-1-1.5-1.5-3-1.5-4.5V7.5C16 5 14 3 12 3z'/%3E%3C/svg%3E");
+  background-image: url("/brand/skull-mark.png");
   background-repeat: repeat;
-  background-size: 120px 120px;
+  background-size: 100px 100px;
+  opacity: 0.04;
 }
 
 .logo-glow {
   text-shadow:
-    0 0 20px rgba(0, 240, 255, 0.65),
-    0 0 48px rgba(255, 0, 170, 0.35),
-    0 0 2px rgba(255, 102, 0, 0.5);
+    0 0 20px rgba(199, 91, 36, 0.65),
+    0 0 48px rgba(232, 223, 208, 0.25),
+    0 0 2px rgba(93, 190, 179, 0.4);
 }
