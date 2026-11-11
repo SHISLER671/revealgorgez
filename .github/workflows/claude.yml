@@ -15,10 +15,10 @@ jobs:
     if: |
       github.actor == 'SHISLER671' &&
       (
-        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude-go')) ||
+        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude-go')) ||
+        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude-go')) ||
+        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude-go') || contains(github.event.issue.title, '@claude-go')))
       )
     runs-on: ubuntu-latest
     permissions:
@@ -38,6 +38,8 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          trigger_phrase: "@claude-go"
           claude_args: |
             --model claude-sonnet-5-5
             --max-turns 10
+            --allowedTools "Bash(npm ci),Bash(npm install),Bash(npm run build),Bash(npm run lint)"
